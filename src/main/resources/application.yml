@@ -1,0 +1,46 @@
+spring:
+  mustache:
+    servlet:
+      expose-request-attributes: true
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/MySQL?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: 1234
+
+  jpa:
+    hibernate:
+      ddl-auto: none  # none, create, create-drop, update, validate
+    properties:
+      hibernate:
+        # 포맷팅된 SQL 출력
+        format_sql: true
+        # SQL 코멘트 표시
+        use_sql_comments: true
+        # 컬렉션 배치 사이즈
+        default_batch_fetch_size: 100
+        # 통계 수집
+        generate_statistics: true
+        # 지연 로딩 설정
+        enable_lazy_load_no_trans: false
+    show-sql: true
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+    session:
+      timeout: 90m       # 세션 유지 시간 설정 (예: 90분)
+      tracking-modes: cookie  # 세션 추적 방식 (cookie, url, ssl 중 선택 가능)
+
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
