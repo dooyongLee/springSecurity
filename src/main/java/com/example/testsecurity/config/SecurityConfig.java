@@ -9,8 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration
-@EnableWebSecurity
+@Configuration // 설정
+@EnableWebSecurity // Spring Security 활성화
 public class SecurityConfig {
 
     @Bean
@@ -68,7 +68,7 @@ public class SecurityConfig {
                 .permitAll()
         );
 
-        /*csrf?
+        /*CSRF?
          * CSRF(Cross-Site Request Forgery)는 요청을 위조하여 사용자가 원하지 않아도 서버측으로 특정 요청을 강제로
          * 보내는 방식(ex:회원정보 변경, 게시글 CRUD)
          * 개발환경에서는 disable / 운영환경에서는 enable(CSRF필터 작동_토큰유무검증)
