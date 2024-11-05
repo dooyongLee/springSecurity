@@ -2,6 +2,8 @@ package com.example.testsecurity.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +17,20 @@ public class SecurityConfig {
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
 
         return new BCryptPasswordEncoder();
+    }
+
+    /* Role 계층구조 설정
+     * 상위 권한은 하위권한을 모두 포함한다.
+     * ROLE_C > ROLE_B > ROLE_A 형태의 계층구조
+     * 순환 참조 주의 (예: A > B > C > A)
+     * 6.3.x 이후 버전 Deprecated
+     */
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
+        hierarchy.setHierarchy("ROLE_C > ROLE_B \n" +
+                "ROLE_B > ROLE_A");
+        return hierarchy;
     }
 
     @Bean
@@ -31,10 +47,19 @@ public class SecurityConfig {
          * anonymous() : 익명 사용자만 접근 가능
          * rememberMe() : Remember-Me로 인증된 사용자 접근 가능
          */
+
+//        http.authorizeRequests((auth) -> auth
+//                .requestMatchers("/", "/login", "/join", "joinProc").permitAll()
+//                .requestMatchers("/admin").hasRole("ADMIN")
+//                .requestMatchers("/my/**").hasAnyRole("ADMIN", "USER")
+//                .anyRequest().authenticated()
+//        );
+
         http.authorizeRequests((auth) -> auth
-                .requestMatchers("/", "/login", "/join", "joinProc").permitAll()
-                .requestMatchers("/admin").hasRole("ADMIN")
-                .requestMatchers("/my/**").hasAnyRole("ADMIN", "USER")
+                .requestMatchers("/login").permitAll()
+                .requestMatchers("/").hasAnyRole("A")
+                .requestMatchers("/manager").hasAnyRole("B")
+                .requestMatchers("/admin").hasAnyRole("C")
                 .anyRequest().authenticated()
         );
 
@@ -54,7 +79,7 @@ public class SecurityConfig {
         /*
          *로그아웃 csrf 처리
          */
-        http.logout((auth)-> auth.logoutUrl("/logout").logoutSuccessUrl("/"));
+        http.logout((auth) -> auth.logoutUrl("/logout").logoutSuccessUrl("/"));
 
         /* session설정
          * sessionManagement()메소드를 통한 설정을 진행
